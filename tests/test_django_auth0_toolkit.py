@@ -23,6 +23,7 @@ def default_settings():
         AUTH0_CLIENT_ID='client-id-from-auth0',
         AUTH0_LOGIN_CALLBACK_URL='/handle-auth0-callback',
         ROOT_URLCONF=[],
+        ALLOWED_HOSTS=['localhost', '127.0.0.1', '[::1]', 'testserver'],
     )
     from django.apps import apps
     apps.populate([

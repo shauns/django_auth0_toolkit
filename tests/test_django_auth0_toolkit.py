@@ -8,9 +8,7 @@ test_django_auth0_toolkit
 Tests for `django_auth0_toolkit` module.
 """
 import pytest
-from django.conf import settings
-from django.test import RequestFactory
-from django.utils.six.moves.urllib.parse import urlparse
+from django.utils.six.moves.urllib import parse as urlparse
 import responses
 
 from django_auth0_toolkit import django_auth0_toolkit
@@ -18,6 +16,7 @@ from django_auth0_toolkit import django_auth0_toolkit
 
 @pytest.fixture(scope='session', autouse=True)
 def default_settings():
+    from django.conf import settings
     settings.configure(
         DEBUG=True,
         AUTH0_DOMAIN='testing.auth0.com',
@@ -35,6 +34,7 @@ def default_settings():
 
 @pytest.fixture
 def rf():
+    from django.test import RequestFactory
     return RequestFactory()
 
 

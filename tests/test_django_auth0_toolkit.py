@@ -7,11 +7,10 @@ test_django_auth0_toolkit
 
 Tests for `django_auth0_toolkit` module.
 """
-from urlparse import urlparse, parse_qs
-
 import pytest
 from django.conf import settings
 from django.test import RequestFactory
+from django.utils.six.moves.urllib.parse import urlparse
 import responses
 
 from django_auth0_toolkit import django_auth0_toolkit
@@ -47,12 +46,12 @@ def test_sso_without_intercept(rf):
 
     assert res.status_code == 302
 
-    actual = urlparse(res['Location'])
+    actual = urlparse.urlparse(res['Location'])
 
     assert actual.scheme == 'https'
     assert actual.netloc == 'testing.auth0.com'
     assert actual.path == '/oauth/authorize'
-    assert parse_qs(actual.query) == {
+    assert urlparse.parse_qs(actual.query) == {
         'client_id': ['client-id-from-auth0'],
         'redirect_uri': ['http://testserver/handle-auth0-callback'],
         'response_type': ['code'],

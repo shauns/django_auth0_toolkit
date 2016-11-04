@@ -22,6 +22,10 @@ import os
 # absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 
+# To make Django settings importable
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "test_project.settings")
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'tests'))
+
 # Get the project root dir, which is the parent dir of this
 cwd = os.getcwd()
 project_root = os.path.dirname(cwd)

@@ -7,6 +7,8 @@ test_django_auth0_toolkit
 
 Tests for `django_auth0_toolkit` module.
 """
+import os
+
 import pytest
 from django.utils.six.moves.urllib import parse as urlparse
 import responses
@@ -14,23 +16,12 @@ import responses
 from django_auth0_toolkit import sso
 
 
-@pytest.fixture(scope='session', autouse=True)
-def default_settings():
-    from django.conf import settings
-    settings.configure(
-        DEBUG=True,
-        AUTH0_DOMAIN='testing.auth0.com',
-        AUTH0_CLIENT_ID='client-id-from-auth0',
-        AUTH0_LOGIN_CALLBACK_URL='/handle-auth0-callback',
-        ROOT_URLCONF=[],
-        ALLOWED_HOSTS=['localhost', '127.0.0.1', '[::1]', 'testserver'],
-    )
-    from django.apps import apps
-    apps.populate([
-        'django.contrib.auth',
-        'django.contrib.contenttypes',
-        'django.contrib.sessions',
-    ])
+@pytest.fixture(autouse=True)
+def default_settings(monkeypatch):
+    monkeypatch.syspath_prepend(os.path.join(os.path.dirname(__file__)))
+    monkeypatch.setenv('DJANGO_SETTINGS_MODULE', 'test_project.settings')
+    from django import setup
+    setup()
 
 
 @pytest.fixture

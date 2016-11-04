@@ -11,7 +11,7 @@ import pytest
 from django.utils.six.moves.urllib import parse as urlparse
 import responses
 
-from django_auth0_toolkit import django_auth0_toolkit
+from django_auth0_toolkit import sso
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -40,7 +40,7 @@ def rf():
 
 
 def test_sso_without_intercept(rf):
-    res = django_auth0_toolkit.sso_fallback(
+    res = sso.sso_fallback(
         rf.get('/restricted-page/'),
         intercept_auth0_redirect=False,
     )
@@ -74,7 +74,7 @@ def test_sso_with_intercept_is_authed(rf):
         callback=request_callback,
     )
 
-    res = django_auth0_toolkit.sso_fallback(
+    res = sso.sso_fallback(
         rf.get('/restricted-page/'),
         intercept_auth0_redirect=True,
     )
@@ -101,7 +101,7 @@ def test_sso_with_intercept_is_anon(rf):
         callback=request_callback,
     )
 
-    res = django_auth0_toolkit.sso_fallback(
+    res = sso.sso_fallback(
         rf.get('/restricted-page/'),
         intercept_auth0_redirect=True,
     )

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 
 import requests
@@ -5,6 +6,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
+from django.utils.translation import ugettext as _
 
 
 class LoginError(Exception):
@@ -15,23 +17,18 @@ class LoginError(Exception):
 def generic_auth0_callback(request):
     user_info = get_user_in_auth0_callback(request)
 
-    user, is_new_user = register_and_login_auth0_user(request, user_info)
+    user = register_and_login_auth0_user(request, user_info)
 
-    return user_info, user, is_new_user
+    return user_info, user
 
 
 def register_and_login_auth0_user(request, user_info, do_login=True):
-    # To aid merging
-    # TODO set responsibility for this in the backend instead
-    existing_account = check_for_user(user_info['user_id'])
-    is_new_user = existing_account is None
-
     # Expects an authentication backend that can handle these kwargs.
     user = authenticate(user_info=user_info)
     if do_login and user.is_active:
         login(request, user)
 
-    return user, is_new_user
+    return user
 
 
 def get_user_in_auth0_callback(request):
@@ -39,7 +36,7 @@ def get_user_in_auth0_callback(request):
     if code is None:
         # Failed to log in.
         error_description = request.GET.get(
-            'error_description', 'Unknown Error'
+            'error_description', _('Unknown Error')
         )
         raise LoginError(error_description)
 
@@ -49,7 +46,7 @@ def get_user_in_auth0_callback(request):
     if 'access_token' not in token_info:
         # Failed to log in.
         error_description = request.GET.get(
-            'error_description', 'Unknown Error'
+            'error_description', _('Unknown Error')
         )
         raise LoginError(error_description)
 
@@ -61,7 +58,8 @@ def get_token_info_from_access_code(code, redirect_url):
     json_header = {'content-type': 'application/json'}
 
     token_url = "https://{domain}/oauth/token".format(
-        domain=settings.AUTH0_DOMAIN)
+        domain=settings.AUTH0_DOMAIN
+    )
 
     token_payload = {
         'client_id': settings.AUTH0_CLIENT_ID,
@@ -71,15 +69,16 @@ def get_token_info_from_access_code(code, redirect_url):
         'grant_type': 'authorization_code'
     }
 
-    token_info = requests.post(token_url, data=json.dumps(token_payload),
-                               headers=json_header).json()
+    token_info = requests.post(
+        token_url, data=json.dumps(token_payload), headers=json_header
+    ).json()
     return token_info
 
 
 def get_user_info_with_access_token(access_token):
-    user_url = "https://{domain}/userinfo?access_token={access_token}" \
-        .format(domain=settings.AUTH0_DOMAIN,
-                access_token=access_token)
+    user_url = "https://{domain}/userinfo?access_token={access_token}".format(
+        domain=settings.AUTH0_DOMAIN, access_token=access_token
+    )
 
     user_info = requests.get(user_url).json()
     return user_info

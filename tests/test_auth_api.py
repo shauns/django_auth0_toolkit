@@ -74,7 +74,6 @@ def test_get_token_info_from_authorization_code_fails():
             'error_description': 'Invalid authorization code',
         }))
 
-
     responses.add(
         responses.POST,
         'https://testing.auth0.com/oauth/token',

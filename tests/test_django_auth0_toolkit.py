@@ -7,27 +7,10 @@ test_django_auth0_toolkit
 
 Tests for `django_auth0_toolkit` module.
 """
-import os
-
-import pytest
 from django.utils.six.moves.urllib import parse as urlparse
 import responses
 
 from django_auth0_toolkit import sso
-
-
-@pytest.fixture(autouse=True)
-def default_settings(monkeypatch):
-    monkeypatch.syspath_prepend(os.path.join(os.path.dirname(__file__)))
-    monkeypatch.setenv('DJANGO_SETTINGS_MODULE', 'test_project.settings')
-    from django import setup
-    setup()
-
-
-@pytest.fixture
-def rf():
-    from django.test import RequestFactory
-    return RequestFactory()
 
 
 def test_sso_without_intercept(rf):

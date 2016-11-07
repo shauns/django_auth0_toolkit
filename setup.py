@@ -11,6 +11,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'requests>=2',
+    'PyJWT>=1.4.2',
 ]
 
 test_requirements = [

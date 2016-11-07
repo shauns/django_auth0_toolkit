@@ -1,5 +1,4 @@
 import pytest
-from django.conf import settings
 
 from django_auth0_toolkit.tokens import prepare_secret, get_decoded_token
 
@@ -23,6 +22,7 @@ def test_prepare_secret(secret, expected):
 
 
 def test_get_decoded_token():
+    from django.conf import settings
     res = get_decoded_token(
         TOKEN,
         settings.AUTH0_CLIENT_SECRET,
@@ -58,6 +58,7 @@ def test_get_decoded_token():
     'what',
 ])
 def test_get_decoded_token_bad_secret(token):
+    from django.conf import settings
     with pytest.raises(ValueError):
         get_decoded_token(
             token,

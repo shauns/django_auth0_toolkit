@@ -20,7 +20,7 @@ test_requirements = [
 
 setup(
     name='django_auth0_toolkit',
-    version='0.2.1',
+    version='0.2.2',
     description="Toolkit for using Auth0 with Django projects",
     long_description=readme + '\n\n' + history,
     author="Shaun Stanworth",

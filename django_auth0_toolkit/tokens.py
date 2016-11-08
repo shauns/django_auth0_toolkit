@@ -4,8 +4,12 @@ https://jwt.io/
 
 """
 import base64
+import logging
 
 import jwt
+
+
+logger = logging.getLogger(__name__)
 
 
 def prepare_secret(secret):
@@ -41,4 +45,5 @@ def get_decoded_token(token, secret, client_id):
             audience=client_id,
         )
     except jwt.InvalidTokenError:
+        logger.exception('JWT failed to decode')
         raise ValueError('Invalid Token')

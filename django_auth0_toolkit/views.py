@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -9,6 +10,9 @@ from django_auth0_toolkit.auth_api import (
     get_user_info_with_id_token,
 )
 from django_auth0_toolkit.django_auth import register_and_login_auth0_user
+
+
+logger = logging.getLogger(__name__)
 
 
 class LoginError(Exception):
@@ -28,6 +32,7 @@ def get_user_in_auth0_callback(request):
     code = request.GET.get('code', None)
     if code is None:
         # Failed to log in.
+        logger.debug('Auth0 callback did not include Authorization Code')
         error_description = request.GET.get(
             'error_description', _('Unknown Error')
         )
@@ -36,8 +41,9 @@ def get_user_in_auth0_callback(request):
     token_info = get_token_info_from_authorization_code(
         code, request.build_absolute_uri()
     )
-    if 'access_token' not in token_info:
+    if 'id_token' not in token_info:
         # Failed to log in.
+        logger.debug("Token-Authorization Code swap didn't yield an ID token")
         error_description = request.GET.get(
             'error_description', _('Unknown Error')
         )

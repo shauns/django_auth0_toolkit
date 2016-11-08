@@ -5,11 +5,15 @@ https://auth0.com/docs/api/authentication
 
 """
 import json
+import logging
 
 import requests
 from django.conf import settings
 
 from django_auth0_toolkit.exceptions import InvalidTokenException
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_token_info_from_authorization_code(authorization_code, redirect_url):
@@ -45,6 +49,7 @@ def get_token_info_from_authorization_code(authorization_code, redirect_url):
     try:
         res.raise_for_status()
     except requests.HTTPError:
+        logger.exception('Authorization Code-Token exchange failed')
         raise InvalidTokenException(authorization_code)
 
     token_info = res.json()
@@ -71,6 +76,7 @@ def get_user_info_with_id_token(id_token):
     try:
         res.raise_for_status()
     except requests.HTTPError:
+        logger.exception('ID token-profile exchange failed')
         raise InvalidTokenException(id_token)
 
     user_info = res.json()

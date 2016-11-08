@@ -1,6 +1,9 @@
 from __future__ import unicode_literals
 
+import logging
+
 from django.conf import settings
+from django.contrib import auth as django_auth
 from django.utils.functional import SimpleLazyObject
 from django.utils.six import text_type
 
@@ -9,25 +12,32 @@ from django_auth0_toolkit.django_auth import register_and_login_auth0_user
 from django_auth0_toolkit.tokens import get_decoded_token
 
 
+logger = logging.getLogger(__name__)
+
+
 def get_user_from_request(request):
     """
     Returns the user model instance associated with the given request session.
     If no user is retrieved an instance of `AnonymousUser` is returned.
 
     """
-    from django.contrib.auth.models import AnonymousUser
     user = None
 
-    auth = request.META.get('HTTP_AUTHORIZATION', b'')
-    if isinstance(auth, text_type):
-        auth = auth.encode('iso-8859-1')
+    auth_header = request.META.get('HTTP_AUTHORIZATION', b'')
+    if isinstance(auth_header, text_type):
+        auth_header = auth_header.encode('iso-8859-1')
 
-    auth = auth.split()
+    auth_header = auth_header.split()
 
-    if auth and len(auth) == 2 and auth[0].lower() == 'bearer'.encode():
+    if (
+        auth_header and len(auth_header) == 2 and
+        auth_header[0].lower() == 'bearer'.encode()
+    ):
         try:
-            id_token = auth[1].decode()
+            logger.debug('Received ID token %s', auth_header[1])
+            id_token = auth_header[1].decode()
         except UnicodeError:
+            logger.debug('Auth failed due to unicode error in token')
             pass
         else:
             # Confirm its not a phoney token
@@ -38,15 +48,23 @@ def get_user_from_request(request):
                     settings.AUTH0_CLIENT_ID,
                 )
             except ValueError:
+                logger.debug('Auth failed due to bad ID token')
                 pass
             else:
+                # TODO if there is already a logged in user, and it's this
+                # user, don't re-fetch their details.
+
+                # TODO avoid a fetch if the token already includes a rich
+                # profile
+
                 user_info = get_user_info_with_id_token(
                     id_token
                 )
 
                 user = register_and_login_auth0_user(request, user_info)
 
-    return user or AnonymousUser()
+    # if no user, we fall back to Django's normal AuthenticationMiddleware
+    return user or django_auth.get_user(request)
 
 
 def get_user(request):

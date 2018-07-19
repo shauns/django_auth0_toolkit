@@ -15,8 +15,8 @@ TOKEN = (
 
 
 @pytest.mark.parametrize("secret,expected", [
-    (b'c2VjcmV0cw==', b'secrets'),
-    (b'Y_1-', b'c\xfd~')
+    ('c2VjcmV0cw==', b'secrets'),
+    ('Y_1-', b'c\xfd~')
 ])
 def test_prepare_secret(secret, expected):
     assert expected == prepare_secret(secret)

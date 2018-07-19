@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import pytest
 
 from django_auth0_toolkit.tokens import prepare_secret, get_decoded_token
@@ -14,8 +15,8 @@ TOKEN = (
 
 
 @pytest.mark.parametrize("secret,expected", [
-    ('c2VjcmV0cw==', b'secrets'),
-    (u'Y_1-', b'c\xfd~')
+    (b'c2VjcmV0cw==', b'secrets'),
+    (b'Y_1-', b'c\xfd~')
 ])
 def test_prepare_secret(secret, expected):
     assert expected == prepare_secret(secret)

@@ -30,7 +30,7 @@ def get_decoded_token(token, secret, client_id):
     :param token: JWT to decode, such as an ``id_token``.
     :type token: str
     :param secret: Secret used to sign the JWT
-    :type secret: str
+    :type secret: bytes
     :param client_id: Client application ID the JWT is for (``aud`` key).
     :type client_id: str
     :return: Decoded JWT object

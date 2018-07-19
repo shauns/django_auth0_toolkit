@@ -16,12 +16,12 @@ def prepare_secret(secret):
     """ Converts an auth0 secret to its byte equivalent for JWT lib
 
     :param secret: Auth0 secret to convert, in base64 (as per Auth0 dashboard)
-    :type secret: str
+    :type secret: bytes
     :return: Decoded secret, compatible with :mod:`PyJWT`
-    :rtype: str
+    :rtype: bytes
 
     """
-    return base64.b64decode(secret.replace("_", "/").replace("-", "+"))
+    return base64.b64decode(secret.replace(b"_", b"/").replace(b"-", b"+"))
 
 
 def get_decoded_token(token, secret, client_id):
